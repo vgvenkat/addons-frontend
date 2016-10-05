@@ -16,7 +16,7 @@ describe('Search.mapStateToProps()', () => {
   };
 
   it('passes the search state if the URL and state query matches', () => {
-    const props = mapStateToProps(state, { location: { query: { q: 'ad-block' } } });
+    const props = mapStateToProps(state, { location: { query: { q: 'ad-block' } }, params: { application: 'firefox' } });
     assert.deepEqual(props, { lang: 'fr-CA', ...state.search });
   });
 
@@ -123,17 +123,22 @@ describe('CurrentSearchPage.loadSearchResultsIfNeeded()', () => {
     mockApi
       .expects('search')
       .once()
-      .withArgs({ page, query, api: state.api, auth: false })
+      .withArgs({ page, query, api: state.api, auth: false,
+                  addonType: undefined, category: undefined,
+      })
       .returns(Promise.resolve({ entities, result }));
     return loadSearchResultsIfNeeded({ store, location }).then(() => {
       mockApi.verify();
       assert(
         dispatch.firstCall.calledWith(
-          searchActions.searchStart(query, page)),
+          searchActions.searchStart({ query, page })),
           'searchStart not called');
       assert(
         dispatch.secondCall.calledWith(
-          searchActions.searchLoad({ query, entities, result })),
+          searchActions.searchLoad({
+            query, entities, result, addonType: undefined, app: undefined,
+            category: undefined,
+          })),
           'searchLoad not called');
     });
   });
@@ -152,17 +157,21 @@ describe('CurrentSearchPage.loadSearchResultsIfNeeded()', () => {
     mockApi
       .expects('search')
       .once()
-      .withArgs({ page, query, api: state.api, auth: false })
+      .withArgs({ page, query, api: state.api, auth: false,
+                  addonType: undefined, category: undefined,
+      })
       .returns(Promise.reject());
     return loadSearchResultsIfNeeded({ store, location }).then(() => {
       mockApi.verify();
       assert(
         dispatch.firstCall.calledWith(
-          searchActions.searchStart(query, page)),
+          searchActions.searchStart({ query, page })),
           'searchStart not called');
       assert(
         dispatch.secondCall.calledWith(
-          searchActions.searchFail({ page, query })),
+          searchActions.searchFail({ page, query, addonType: undefined,
+            app: undefined, category: undefined,
+          })),
           'searchFail not called');
     });
   });

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import CategoryInfo from 'amo/components/CategoryInfo';
 import SearchPage from 'amo/components/SearchPage';
 import SearchResult from 'amo/components/SearchResult';
 import SearchResults from 'core/components/Search/SearchResults';
@@ -16,6 +17,10 @@ describe('<SearchPage />', () => {
 
   beforeEach(() => {
     props = {
+      CategoryInfoComponent: CategoryInfo,
+      ResultComponent: SearchResult,
+      application: 'firefox',
+      category: null,
       count: 80,
       page: 3,
       handleSearch: sinon.spy(),
@@ -23,23 +28,29 @@ describe('<SearchPage />', () => {
       loading: false,
       results: [{ name: 'Foo', slug: 'foo' }, { name: 'Bar', slug: 'bar' }],
       query: 'foo',
-      ResultComponent: SearchResult,
     };
   });
 
   it('renders the results', () => {
     const root = render();
     const results = findByTag(root, SearchResults);
+    assert.strictEqual(results.props.CategoryInfoComponent,
+      props.CategoryInfoComponent);
+    assert.strictEqual(results.props.ResultComponent, props.ResultComponent);
+    assert.strictEqual(results.props.application, props.application);
+    assert.strictEqual(results.props.category, props.category);
     assert.strictEqual(results.props.count, props.count);
     assert.strictEqual(results.props.lang, props.lang);
+    assert.strictEqual(results.props.loading, props.loading);
+    assert.strictEqual(results.props.page, props.page);
     assert.strictEqual(results.props.results, props.results);
     assert.strictEqual(results.props.query, props.query);
-    assert.strictEqual(results.props.loading, props.loading);
-    assert.strictEqual(results.props.ResultComponent, props.ResultComponent);
     assert.deepEqual(
-      Object.keys(results.props).sort(),
-        ['count', 'lang', 'loading', 'results', 'ResultComponent',
-         'query'].sort());
+      Object.keys(results.props).sort(), [
+        'CategoryInfoComponent', 'ResultComponent', 'application', 'addonType',
+        'category', 'count', 'lang', 'loading', 'page', 'results',
+        'query'].sort()
+      );
   });
 
   it('renders a Paginate', () => {

@@ -1,7 +1,9 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {
   renderIntoDocument,
   findRenderedComponentWithType,
+  findRenderedDOMComponentWithClass,
 } from 'react-addons-test-utils';
 
 import { MastHeadBase } from 'amo/components/MastHead';
@@ -27,6 +29,7 @@ describe('MastHead', () => {
 
   it('renders a heading when isHomepage is true', () => {
     const root = renderMastHead({
+      application: 'firefox',
       isHomePage: true,
       children: FakeChild,
       lang: 'en-GB',
@@ -38,12 +41,15 @@ describe('MastHead', () => {
 
   it('renders a link when isHomepage is false', () => {
     const root = renderMastHead({
+      application: 'firefox',
       isHomePage: false,
       children: FakeChild,
       lang: 'en-GB',
       SearchFormComponent: FakeChild,
     });
-    assert.equal(root.title.textContent, 'Firefox Add-ons');
-    assert.equal(root.title.tagName, 'A');
+    const link = ReactDOM.findDOMNode(
+      findRenderedDOMComponentWithClass(root, 'MastHead-title'));
+    assert.equal(link.textContent, 'Firefox Add-ons');
+    assert.equal(link.tagName, 'A');
   });
 });

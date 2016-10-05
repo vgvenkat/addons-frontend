@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react';
-import { compose } from 'redux';
 import { Link } from 'react-router';
+import { compose } from 'redux';
 
 import translate from 'core/i18n/translate';
 
 import 'amo/css/Home.scss';
+
 
 export class HomePageBase extends React.Component {
   static propTypes = {

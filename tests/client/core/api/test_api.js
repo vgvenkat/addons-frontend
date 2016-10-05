@@ -53,7 +53,8 @@ describe('api', () => {
     it('sets the lang, limit, page and query', () => {
       // FIXME: This shouldn't fail if the args are in a different order.
       mockWindow.expects('fetch')
-        .withArgs(`${apiHost}/api/v3/addons/search/?q=foo&page=3&lang=en-US`)
+        .withArgs(
+          `${apiHost}/api/v3/addons/search/?q=foo&page=3&app=&category=&type=&lang=en-US`)
         .once()
         .returns(mockResponse());
       return api.search({
@@ -81,7 +82,8 @@ describe('api', () => {
     });
 
     it('surfaces status and apiURL on Error instance', () => {
-      const url = `${apiHost}/api/v3/addons/search/?q=foo&page=3&lang=en-US`;
+      const url =
+        `${apiHost}/api/v3/addons/search/?q=foo&page=3&app=&category=&type=&lang=en-US`;
       mockWindow.expects('fetch')
         .withArgs(url)
         .once()
@@ -119,7 +121,8 @@ describe('api', () => {
     it('sets the lang, limit, page and query', () => {
       // FIXME: This shouldn't fail if the args are in a different order.
       mockWindow.expects('fetch')
-        .withArgs(`${apiHost}/api/v3/addons/search/?q=foo&page=3&lang=en-US`)
+        .withArgs(
+          `${apiHost}/api/v3/addons/search/?q=foo&page=3&app=&category=&type=&lang=en-US`)
         .once()
         .returns(mockResponse());
       return api.search({ api: { lang: 'en-US' }, query: 'foo', page: 3 })

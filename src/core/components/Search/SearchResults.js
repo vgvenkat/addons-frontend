@@ -10,31 +10,45 @@ import SearchResult from './SearchResult';
 
 class SearchResults extends React.Component {
   static propTypes = {
+    CategoryInfoComponent: PropTypes.object.isRequired,
+    ResultComponent: PropTypes.object.isRequired,
+    category: PropTypes.string,
     count: PropTypes.number,
     i18n: PropTypes.object.isRequired,
     lang: PropTypes.string.isRequired,
     loading: PropTypes.bool,
     query: PropTypes.string,
     results: PropTypes.arrayOf(PropTypes.object),
-    ResultComponent: PropTypes.object.isRequired,
+    type: PropTypes.string,
   }
 
   static defaultProps = {
-    count: 0,
-    query: null,
+    CategoryInfoComponent: null,
     ResultComponent: SearchResult,
+    category: undefined,
+    count: 0,
+    query: undefined,
     results: [],
   }
 
   render() {
-    const { ResultComponent, count, i18n, lang, loading, query,
-            results } = this.props;
+    const { CategoryInfoComponent, ResultComponent, addonType, category, count,
+            i18n, lang, loading, query, results } = this.props;
 
-    let searchResults;
-    let messageText;
+    const searchParamIsPresent = [category, query].filter((param) => {
+      return param !== undefined && param.length;
+    }).length ? true : false;
+
     let hideMessageText = false;
+    let messageText;
+    let resultHeader;
+    let searchResults;
 
-    if (query && count > 0) {
+    if (category && category.length && CategoryInfoComponent) {
+      resultHeader = <CategoryInfoComponent slug={category} />
+    }
+
+    if (searchParamIsPresent && count > 0) {
       hideMessageText = true;
       messageText = i18n.sprintf(
         i18n.ngettext(
@@ -52,24 +66,31 @@ class SearchResults extends React.Component {
           ))}
         </ul>
       );
-    } else if (query && loading) {
+    } else if (searchParamIsPresent && loading) {
       messageText = i18n.gettext('Searching...');
-    } else if (query && results.length === 0) {
+    } else if (!loading && query && count === 0) {
       messageText = i18n.sprintf(
         i18n.gettext('No results were found for "%(query)s".'), { query });
-    } else if (query !== null) {
-      messageText = i18n.gettext('Please supply a valid search');
+    } else if (!loading && searchParamIsPresent && count === 0) {
+      // TODO: Add the extension type, if available, so it says "no extensions"
+      // found that match your search or something.
+      messageText = i18n.gettext('No results were found.');
+    } else if (!searchParamIsPresent && !loading) {
+      messageText = i18n.gettext(
+        "Please enter search terms to search all of Mozilla's Add-ons.");
     }
 
-    const message = messageText ?
+    const message = (
       <p ref={(ref) => { this.message = ref; }} className={classNames({
         'visually-hidden': hideMessageText,
         'SearchReuslts-message': !hideMessageText,
-      })}>{messageText}</p> : null;
+      })}>{messageText}</p>
+    );
 
     return (
       <div ref={(ref) => { this.container = ref; }} className="SearchResults">
         {message}
+        {resultHeader}
         {searchResults}
       </div>
     );

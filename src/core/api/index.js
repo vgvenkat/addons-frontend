@@ -59,12 +59,12 @@ export function callApi({
     .then((response) => (schema ? normalize(response, schema) : response));
 }
 
-export function search({ api, page, query, auth = false }) {
+export function search({ api, page, query, auth = false, app, category, addonType }) {
   // TODO: Get the language from the server.
   return callApi({
     endpoint: 'addons/search',
     schema: { results: arrayOf(addon) },
-    params: { q: query, page },
+    params: { q: query, page, app, category, type: addonType },
     state: api,
     auth,
   });
